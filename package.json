@@ -1,0 +1,21 @@
+{
+  "name": "hold-the-line",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5173",
+    "build": "vite build",
+    "preview": "vite preview --port 4173",
+    "balance": "node tools/balance.mjs",
+    "ai:test": "node tools/openrouter.mjs",
+    "assets": "node tools/gen-assets.mjs"
+  },
+  "dependencies": {
+    "three": "0.187.0"
+  },
+  "devDependencies": {
+    "@openrouter/sdk": "^1.5.125",
+    "vite": "8.3.8"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "_note": "Designer-owned values from the developer menu. They override src/config.js defaults. Code changes never edit this file.",
+  "global": {
+    "lateStart": 180,
+    "gameSpeed": 1.25,
+    "waveStart": 5,
+    "waveEvery": 10
+  },
+  "undead": {
+    "zombie": {
+      "health": 2,
+      "bunkerDamage": 2
+    }
+  },
+  "sabotage": {
+    "fog": {
+      "unlocked": true
+    },
+    "emp": {
+      "unlocked": true
+    },
+    "raise": {
+      "unlocked": true
+    },
+    "shield": {
+      "unlocked": true
+    }
+  }
+}
