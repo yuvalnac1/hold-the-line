@@ -92,3 +92,10 @@ Every change made in the developer menu is saved automatically (while running `n
 ## Ghost counters
 Ghosts are invisible, but can be seen by: **Sniper L2 / Drone L2**; **any defender** right next to the path (within 1.05 tiles, `global.ghostSenseRadius`); the **bunker searchlight** (bunker level 2+: radius 3.5 / 5 / 6 / 7); **explosions** (grenades, missiles, shells, drone bombs hit and expose them); and the **Flare** magic card. Once spotted, a ghost stays visible to all defenders for 2.5 s (`global.revealLinger`). From level 3 the bunker turret is stronger (1.5–3 dmg, 1.5–2.2 shots/s, range 4.2–5.4) and shoots spotted ghosts first. Ghosts deal 3 bunker damage. The CPU always carries a detector, builds and upgrades one when ghosts get through, uses Flare, and keeps its army mixed (fewer ghosts once 4+ are on the field).
 - **Flare** (magic, 40 soul): cancels the enemy's Fog, EMP and Freeze on you and reveals every ghost on your side for 10 s.
+
+## Pacing (no fixed "5-minute surge")
+Measured with `node tools/surge.mjs [matches] [peaks]` (per-30 s CPU spending and damage; `peaks` = when each game's heaviest CPU push lands; `OLD=1` approximates the previous behaviour).
+- **Eco soft cap:** income boost per tick above `ecoSoftCap` (40) only counts at `ecoOverCap` (35%), so neither economy explodes late.
+- **CPU offensives at random times:** between offensives the CPU's attack spend per decision is capped (`aiPressureBase` + `aiPressurePerSec` × time); big pushes happen at a random moment (first after 100–240 s, then every 50–160 s).
+- **Per-match variation:** late pressure starts ±60 s from 4:00 (`lateJitter`), bosses arrive ±25 s (`bossJitter`), and escalation runs up to ±25% slower or faster (`paceJitter`).
+- Result (60 simulated games): before, the decisive push landed at 4:30–5:30 in 25 of 31 games; now it's spread over 2:30–7:30 with no 30 s window holding more than 8 of 36. Median match ≈ 6.3 min.

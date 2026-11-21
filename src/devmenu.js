@@ -5,6 +5,8 @@ import { BUILD_TILES } from './arena.js';
 
 const $ = (html) => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; };
 const LABELS = {
+  ecoSoftCap: 'Eco income soft cap / tick', ecoOverCap: 'Eco share above cap', lateJitter: 'Late pressure start ± (s)', bossJitter: 'Boss arrival ± (s)', paceJitter: 'Match pace variation ±',
+  aiPressureBase: 'CPU attack cap (base)', aiPressurePerSec: 'CPU attack cap / s', aiOffensiveFirst: 'CPU first offensive after (s)', aiOffensiveSpread: 'CPU first offensive spread (s)', aiOffensiveGap: 'CPU offensive gap min (s)', aiOffensiveGapRand: 'CPU offensive gap random (s)',
   revealLinger: 'Ghost stays revealed (s)', ghostSenseRadius: 'Defenders sense ghosts within', startingCoins: 'Starting coins (new players)', startEnergy: 'Starting soul energy', baseIncome: 'Base income (per tick)', incomeInterval: 'Income tick (s)', incomeGrowthPerMin: 'Income growth / min',
   killRewardMult: 'Kill reward ×', bunkerDamageReward: 'Bunker dmg reward / pt', ecoMult: 'Eco boost ×', ecoPerTick: 'Eco share paid per tick', bunkerHealth: 'Bunker health (next match)',
   escalationStart: 'Escalation start (s)', escalationEvery: 'Escalation every (s)', escalationHealth: 'Escalation +health',

@@ -182,17 +182,19 @@ export class AI {
     if (this.diff === 'easy') lane = Math.floor(Math.random() * 3);
     else lane = g.weakestLane(enemy);
 
-    if (this.diff === 'hard') {
-      // save up for big combined pushes
-      if (!this.saving && Math.random() < 0.3 && g.t > 50) { this.saving = true; this.saveTarget = 70 + g.t * 0.6; this.pushLane = lane; }
-      if (this.saving) {
-        if (me.energy < this.saveTarget) { this.trickle(undead, lane, 0.25); return; }
-        this.saving = false;
-        this.push(undead, this.pushLane, me.energy * 0.85);
+    const c = CONFIG.global, t = g.t;
+    // Big offensives happen at random times (a few per match), not at a fixed moment.
+    this.nextOffensive ??= c.aiOffensiveFirst + Math.random() * c.aiOffensiveSpread;
+    if (this.diff !== 'easy' && t >= this.nextOffensive) {
+      if (me.energy >= 100 + t * 0.35) {
+        this.push(undead, lane, me.energy * (0.55 + Math.random() * 0.3));
+        this.nextOffensive = t + c.aiOffensiveGap + Math.random() * c.aiOffensiveGapRand;
         return;
       }
     }
-    const budget = this.diff === 'easy' ? me.energy * 0.5 : me.energy * 0.7;
+    // Between offensives: steady pressure with a capped budget (the rest is saved for the next offensive).
+    const cap = c.aiPressureBase + t * c.aiPressurePerSec;
+    const budget = Math.min(cap, me.energy * (this.diff === 'easy' ? 0.5 : 0.65));
     this.push(undead, lane, budget);
   }
 

@@ -12,6 +12,8 @@ export const DEFAULT_CONFIG = {
     bunkerDamageReward: 3,    // soul energy per point of bunker damage
     ecoMult: 1.0,             // multiplier on each undead's income boost
     ecoPerTick: 0.32,         // share of an undead's income boost paid each income tick
+    ecoSoftCap: 40,           // income boost per tick above this grows more slowly…
+    ecoOverCap: 0.35,         // …only this share of the extra counts (stops runaway late economies)
     bunkerHealth: 100,
     revealLinger: 2.5,        // a spotted ghost stays visible to all defenders this long (s)
     ghostSenseRadius: 1.05,    // any defender senses (reveals) a ghost passing this close (tiles)
@@ -21,6 +23,9 @@ export const DEFAULT_CONFIG = {
     // late-game pressure (never announced): from lateStart, every lateEvery seconds undead get a bit
     // tougher, faster and hit bunkers harder, so a match always ends — there is no time limit.
     lateStart: 240,
+    lateJitter: 60,           // each match starts the late pressure up to ±this many seconds from lateStart
+    bossJitter: 25,           // each boss arrives up to ±this many seconds from its scheduled time
+    paceJitter: 0.25,         // each match's escalation / late pressure runs this much slower or faster (±)
     lateEvery: 30,
     lateHealth: 0.15,
     lateSpeed: 0.04,
@@ -32,6 +37,12 @@ export const DEFAULT_CONFIG = {
     gameSpeed: 1,
     aiDecisionSlow: 4.2,      // CPU seconds between decisions at the lowest strength…
     aiDecisionFast: 1.9,      // …and at the highest (strength adapts to the player)
+    aiPressureBase: 60,       // CPU attack spend cap per decision between offensives…
+    aiPressurePerSec: 0.6,    // …growing this much per second of match time
+    aiOffensiveFirst: 100,    // first big CPU offensive: somewhere between this…
+    aiOffensiveSpread: 140,   // …and this many seconds later (random each match)
+    aiOffensiveGap: 50,       // next offensive: at least this many seconds later…
+    aiOffensiveGapRand: 110,  // …plus up to this many more (random)
     tileSpeed: 1.15,          // tiles per second at speed 1.0
     wavesOn: true,            // automatic undead waves attack both bunkers
     waveStart: 6,             // first wave (s)

@@ -58,6 +58,8 @@ export class Game {
     this.freezeUntil = [[0, 0, 0], [0, 0, 0]];
     this.incomeTimer = 0;
     this.bossIdx = 0;
+    this.lateOffset = (Math.random() * 2 - 1) * g.lateJitter;   // late pressure starts at a different time each match
+    this.pace = 1 + (Math.random() * 2 - 1) * (g.paceJitter || 0); // and the dead grow stronger at a different pace
     this.occupied = [new Map(), new Map()];
     this.paused = false;
     this.aiPaused = false;
@@ -72,18 +74,21 @@ export class Game {
   }
   lateStacks(t = this.t) {
     const g = CONFIG.global;
-    return t >= g.lateStart ? Math.floor((t - g.lateStart) / g.lateEvery) + 1 : 0;
+    const start = g.lateStart + this.lateOffset;
+    return t >= start ? Math.floor((t - start) / g.lateEvery) + 1 : 0;
   }
   hpMult() {
     const g = CONFIG.global;
-    return (1 + g.escalationHealth * this.escalationStacks()) * (1 + g.lateHealth * this.lateStacks());
+    return (1 + g.escalationHealth * this.pace * this.escalationStacks()) * (1 + g.lateHealth * this.pace * this.lateStacks());
   }
-  speedMult() { return 1 + CONFIG.global.lateSpeed * this.lateStacks(); }
-  bunkerMult() { return 1 + CONFIG.global.lateBunkerDmg * this.lateStacks(); }
+  speedMult() { return 1 + CONFIG.global.lateSpeed * this.pace * this.lateStacks(); }
+  bunkerMult() { return 1 + CONFIG.global.lateBunkerDmg * this.pace * this.lateStacks(); }
   incomePerTick(side) {
     const g = CONFIG.global;
     const p = this.players[side];
-    return (g.baseIncome * (1 + g.incomeGrowthPerMin * this.t / 60) + p.eco * g.ecoPerTick) * p.incomeMult;
+    let eco = p.eco * g.ecoPerTick;
+    if (eco > g.ecoSoftCap) eco = g.ecoSoftCap + (eco - g.ecoSoftCap) * g.ecoOverCap;   // diminishing returns
+    return (g.baseIncome * (1 + g.incomeGrowthPerMin * this.t / 60) + eco) * p.incomeMult;
   }
 
   // ----- costs -----
@@ -393,9 +398,12 @@ export class Game {
   // next scheduled boss group: the fixed timeline, then a repeating cycle
   nextBoss(any) {
     if (this.tutorial && !any) return null;
-    if (this.bossIdx < BOSS_TIMELINE.length) return BOSS_TIMELINE[this.bossIdx];
+    // every boss gets its own random offset per match, so they don't always land at the same second
+    this.bossOffsets ??= [];
+    const off = this.bossOffsets[this.bossIdx] ??= (Math.random() * 2 - 1) * (CONFIG.global.bossJitter || 0);
+    if (this.bossIdx < BOSS_TIMELINE.length) { const b = BOSS_TIMELINE[this.bossIdx]; return { t: b.t + (b.t > 60 ? off : 0), units: b.units }; }
     const k = this.bossIdx - BOSS_TIMELINE.length;
-    return { t: BOSS_CYCLE.start + k * BOSS_CYCLE.every, units: BOSS_CYCLE.units[k % BOSS_CYCLE.units.length] };
+    return { t: BOSS_CYCLE.start + k * BOSS_CYCLE.every + off, units: BOSS_CYCLE.units[k % BOSS_CYCLE.units.length] };
   }
   spawnBoss(b) {
     const lane = Math.floor(Math.random() * 3);
